@@ -18,18 +18,14 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <Contacts/Contacts.h>
+#import <ContactsUI/ContactsUI.h>
 #import <AddressBook/ABAddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
 #import <Cordova/CDVPlugin.h>
 #import "CDVContact.h"
 
-@interface CDVContacts : CDVPlugin <ABNewPersonViewControllerDelegate,
-                         ABPersonViewControllerDelegate,
-                         ABPeoplePickerNavigationControllerDelegate
-                         >
-{
-    ABAddressBookRef addressBook;
-}
+@interface CDVContacts : CDVPlugin <CNContactViewControllerDelegate, CNContactPickerDelegate>
 
 /*
  * newContact - create a new contact via the GUI
@@ -61,9 +57,6 @@
  */
 - (void)chooseContact:(CDVInvokedUrlCommand*)command;
 
-- (void)newPersonViewController:(ABNewPersonViewController*)newPersonViewController didCompleteWithNewPerson:(ABRecordRef)person;
-- (BOOL)personViewController:(ABPersonViewController*)personViewController shouldPerformDefaultActionForPerson:(ABRecordRef)person
-                    property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifierForValue;
 /*
  * Launches the Contact Picker to select a single contact.
  *
@@ -111,50 +104,19 @@
 
 @end
 
-@interface CDVContactsPicker : ABPeoplePickerNavigationController
-{
-    BOOL allowsEditing;
-    NSString* callbackId;
-    NSDictionary* options;
-    NSDictionary* pickedContactDictionary;
-}
+@interface CDVContactsPicker : CNContactPickerViewController
 
-@property BOOL allowsEditing;
+
 @property (copy) NSString* callbackId;
 @property (nonatomic, strong) NSDictionary* options;
 @property (nonatomic, strong) NSDictionary* pickedContactDictionary;
 
 @end
 
-@interface CDVNewContactsController : ABNewPersonViewController
-{
-    NSString* callbackId;
-}
+@interface CDVContactController : CNContactViewController
+
 @property (copy) NSString* callbackId;
 @end
 
-/* ABPersonViewController does not have any UI to dismiss.  Adding navigationItems to it does not work properly,  the navigationItems are lost when the app goes into the background.
-    The solution was to create an empty NavController in front of the ABPersonViewController. This
-    causes the ABPersonViewController to have a back button. By subclassing the ABPersonViewController,
-    we can override viewWillDisappear and take down the entire NavigationController at that time.
- */
-@interface CDVDisplayContactViewController : ABPersonViewController
-{}
-@property (nonatomic, strong) CDVPlugin* contactsPlugin;
 
-@end
-@interface CDVAddressBookAccessError : NSObject
-{}
-@property (assign) CDVContactError errorCode;
-- (CDVAddressBookAccessError*)initWithCode:(CDVContactError)code;
-@end
 
-typedef void (^ CDVAddressBookWorkerBlock)(
-    ABAddressBookRef         addressBook,
-    CDVAddressBookAccessError* error
-    );
-@interface CDVAddressBookHelper : NSObject
-{}
-
-- (void)createAddressBook:(CDVAddressBookWorkerBlock)workerBlock;
-@end

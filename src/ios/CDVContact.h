@@ -20,6 +20,8 @@
 #import <Foundation/Foundation.h>
 #import <AddressBook/ABAddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
+#import <Contacts/Contacts.h>
+#import <ContactsUI/ContactsUI.h>
 
 enum CDVContactError {
     UNKNOWN_ERROR = 0,
@@ -34,11 +36,10 @@ enum CDVContactError {
 typedef NSUInteger CDVContactError;
 
 @interface CDVContact : NSObject {
-    ABRecordRef record;         // the ABRecord associated with this contact
     NSDictionary* returnFields; // dictionary of fields to return when performing search
 }
 
-@property (nonatomic, assign) ABRecordRef record;
+@property (nonatomic, strong) CNContact* contact;
 @property (nonatomic, strong) NSDictionary* returnFields;
 
 + (NSDictionary*)defaultABtoW3C;
@@ -49,14 +50,13 @@ typedef NSUInteger CDVContactError;
 
 + (NSDictionary*)calcReturnFields:(NSArray*)fields;
 - (id)init;
-- (id)initFromABRecord:(ABRecordRef)aRecord;
+- (id)initFromCNContact:(CNContact*) contact;
 - (bool)setFromContactDict:(NSDictionary*)aContact asUpdate:(BOOL)bUpdate;
 
 + (BOOL)needsConversion:(NSString*)W3Label;
 + (NSDictionary *) getContactLabels;
 + (NSArray *) filterLabels: (NSString *) contactApiLabel;
 + (CFStringRef)convertContactTypeToPropertyLabel:(NSString*)label;
-+ (NSString*)convertPropertyLabelToContactType:(NSString*)label;
 + (BOOL)isValidW3ContactType:(NSString*)label;
 - (bool)setValue:(id)aValue forProperty:(ABPropertyID)aProperty inRecord:(ABRecordRef)aRecord asUpdate:(BOOL)bUpdate;
 

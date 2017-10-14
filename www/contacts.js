@@ -1,3 +1,4 @@
+cordova.define("cordova-plugin-contacts.contacts", function(require, exports, module) {
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -97,3 +98,5 @@ var contacts = {
 };
 
 module.exports = contacts;
+
+});
